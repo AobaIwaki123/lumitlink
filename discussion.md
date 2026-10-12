@@ -21,15 +21,15 @@
 | 3 | JSON API | `/healthz` と `/api/v1/profiles/{username}` を提供 | 完了 |
 | 4 | テスト | 固定HTMLによる解析テスト、race検査、go vet | 完了 |
 | 5 | 運用強化 | Docker/Kubernetesマニフェスト、UI、構造化ログ | 完了 |
-| 6 | ライブ適用 | イメージ公開、Kubernetes apply、Ingress疎通確認 | 進行中 |
-| 7 | 共通entity endpoint | `/api/v1/entities/{username}`でlumi-specへ投影 | 実装中 |
+| 6 | ライブ適用 | イメージ公開、Kubernetes apply、Ingress疎通確認 | 完了（公開APIで確認済み） |
+| 7 | 共通entity endpoint | `/api/v1/entities/{username}`でlumi-specへ投影 | 完了（amamiyasakuで確認済み） |
 | 8 | lumi-exporter | イベント名寄せと相対評価アラート | 別repoでPoC中 |
 
 ## 直近のネクストアクション
 
-- [ ] GHCRへイメージを公開し、Kubernetesに適用する
+- [x] GHCRへイメージを公開し、Kubernetesに適用する
 - [ ] Lit.linkのHTML構造変更を検出する定期Canaryを追加する
-- [ ] ArgoCD Applicationを、独立リポジトリ公開後に有効化する
+- [x] ArgoCD Applicationを独立リポジトリに追加する
 - [ ] `lumi-exporter` の名寄せアラートを実データで評価する（別repoのPoCを参照）
-- [ ] `lumi-spec`の共通イベント・エンティティ契約を利用する
-- [ ] `lumi-exporter`からentity endpointをpullして画面表示する
+- [x] `lumi-spec`の共通エンティティ契約を利用する
+- [x] `lumi-exporter`からentity endpointをpullして画面表示する
