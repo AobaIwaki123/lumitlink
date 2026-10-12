@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>lumipage / Lit.link inspector</title>
+  <title>lumitlink / Lit.link inspector</title>
   <style>
     :root { color-scheme: dark; --bg: #10131d; --panel: #181d2b; --panel2: #20273a; --ink: #f4f6fb; --muted: #9ba8c4; --line: #303951; --accent: #a78bfa; --accent2: #67e8f9; --danger: #fb7185; }
     * { box-sizing: border-box; }
@@ -50,7 +50,7 @@
 <body>
   <main>
     <div class="eyebrow">browserless public profile adapter</div>
-    <h1>lumipage</h1>
+    <h1>lumitlink</h1>
     <p class="lead">Lit.link の公開HTMLをGoで取得し、プロフィールとリンクをそのまま確認する小さな遊び場です。下の表示はモックではなく、APIレスポンスの実データです。</p>
     <form class="search" id="search-form">
       <input id="username" value="amamiyasaku" aria-label="Lit.link username" spellcheck="false">
@@ -69,7 +69,7 @@
         <pre id="raw">まだレスポンスはありません。</pre>
         <details>
           <summary>実ログを別ターミナルで見る</summary>
-          <p><code>kubectl logs -f deployment/lumipage -n lumipage</code></p>
+          <p><code>kubectl logs -f deployment/lumitlink -n lumitlink</code></p>
         </details>
       </aside>
     </section>

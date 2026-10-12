@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: "lumipage API"
+  title: "lumitlink API"
   version: "0.1.0"
   description: "ブラウザを使わずLit.link公開プロフィールを取得する読み取り専用API。"
 servers:

@@ -1,8 +1,8 @@
-# lumipage ディスカッション & 進捗管理
+# lumitlink ディスカッション & 進捗管理
 
 ## 目的
 
-`https://lit.link/amamiyasaku` の公開プロフィールを、ブラウザを起動せずにHTTPクライアントだけで取得し、他のアプリケーションから利用できるJSON APIとして提供する。プロジェクト名は既存の `lumilit` / `lumilink` と役割が重ならない `lumipage` とする。
+`https://lit.link/amamiyasaku` の公開プロフィールを、ブラウザを起動せずにHTTPクライアントだけで取得し、他のアプリケーションから利用できるJSON APIとして提供する。プロジェクト名は `lit.link` に直接結びつく `lumitlink` とする。
 
 ## 方針
 

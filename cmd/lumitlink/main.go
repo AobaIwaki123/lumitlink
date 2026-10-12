@@ -1,4 +1,4 @@
-// Package main starts the lumipage HTTP API and browserless Lit.link adapter.
+// Package main starts the lumitlink HTTP API and browserless Lit.link adapter.
 package main
 
 import (
@@ -19,14 +19,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/AobaIwaki123/lumipage/internal/litlink"
+	"github.com/AobaIwaki123/lumitlink/internal/litlink"
 )
 
 //go:embed web/index.html openapi.yaml
 var assets embed.FS
 
 const (
-	serviceName = "lumipage"
+	serviceName = "lumitlink"
 	trueValues  = "1,true,yes,on"
 )
 
@@ -108,11 +108,11 @@ func run() error {
 
 func loadConfig() config {
 	return config{
-		host:      envString("LUMIPAGE_HOST", "0.0.0.0"),
-		port:      envInt("LUMIPAGE_PORT", 8080, 1, 65535),
-		cacheTTL:  envDuration("LUMIPAGE_CACHE_TTL", 10*time.Minute),
-		timeout:   envDuration("LUMIPAGE_TIMEOUT", litlink.DefaultTimeout),
-		userAgent: envString("LUMIPAGE_USER_AGENT", litlink.DefaultUserAgent),
+		host:      envString("LUMITLINK_HOST", "0.0.0.0"),
+		port:      envInt("LUMITLINK_PORT", 8080, 1, 65535),
+		cacheTTL:  envDuration("LUMITLINK_CACHE_TTL", 10*time.Minute),
+		timeout:   envDuration("LUMITLINK_TIMEOUT", litlink.DefaultTimeout),
+		userAgent: envString("LUMITLINK_USER_AGENT", litlink.DefaultUserAgent),
 		logLevel:  envLogLevel("LOG_LEVEL", slog.LevelInfo),
 	}
 }

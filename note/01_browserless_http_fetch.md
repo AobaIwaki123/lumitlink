@@ -22,7 +22,7 @@ Lit.linkのサービス概要は [公式サイト](https://lit.link/) を参照�
 
 ```bash
 curl -L --compressed \
-  -A 'Mozilla/5.0 (compatible; Lumipage/0.1)' \
+  -A 'Mozilla/5.0 (compatible; Lumitlink/0.1)' \
   https://lit.link/amamiyasaku \
   -o /tmp/litlink-amamiyasaku.html
 ```

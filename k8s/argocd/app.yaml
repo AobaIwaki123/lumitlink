@@ -1,19 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: lumipage
+  name: lumitlink
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
-    repoURL: https://github.com/AobaIwaki123/lumipage.git
+    repoURL: https://github.com/AobaIwaki123/lumitlink.git
     targetRevision: main
     path: k8s/manifests
   destination:
     server: https://kubernetes.default.svc
-    namespace: lumipage
+    namespace: lumitlink
   syncPolicy:
     automated:
       prune: true

@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: lumipage
+  name: lumitlink
   labels:
-    app.kubernetes.io/name: lumipage
+    app.kubernetes.io/name: lumitlink
     app.kubernetes.io/part-of: lumi-series
 spec:
   replicas: 1
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app.kubernetes.io/name: lumipage
+      app.kubernetes.io/name: lumitlink
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: lumipage
+        app.kubernetes.io/name: lumitlink
         app.kubernetes.io/part-of: lumi-series
     spec:
       automountServiceAccountToken: false
@@ -26,24 +26,24 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - name: lumipage
-          image: ghcr.io/aobaiwaki123/lumipage:dev
+        - name: lumitlink
+          image: ghcr.io/aobaiwaki123/lumitlink:dev
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
           env:
-            - name: LUMIPAGE_HOST
+            - name: LUMITLINK_HOST
               value: "0.0.0.0"
-            - name: LUMIPAGE_PORT
+            - name: LUMITLINK_PORT
               value: "8080"
-            - name: LUMIPAGE_CACHE_TTL
+            - name: LUMITLINK_CACHE_TTL
               value: "10m"
-            - name: LUMIPAGE_TIMEOUT
+            - name: LUMITLINK_TIMEOUT
               value: "15s"
-            - name: LUMIPAGE_USER_AGENT
-              value: "lumipage/0.1 (+https://lit.link/)"
+            - name: LUMITLINK_USER_AGENT
+              value: "lumitlink/0.1 (+https://lit.link/)"
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true

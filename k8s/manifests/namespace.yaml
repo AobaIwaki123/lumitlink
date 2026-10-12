@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: lumipage
+  name: lumitlink
   labels:
-    app.kubernetes.io/name: lumipage
+    app.kubernetes.io/name: lumitlink
     app.kubernetes.io/part-of: lumi-series

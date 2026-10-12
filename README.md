@@ -1,22 +1,22 @@
-# lumipage
+# lumitlink
 
 Lit.linkの公開プロフィールを、ブラウザなしで取得してJSON APIとして提供する小さなGoサーバーです。lumiシリーズのプロフィール取得担当として、まず `amamiyasaku` を初期表示対象にしています。
 
 ## 起動
 
 ```bash
-go run ./cmd/lumipage
+go run ./cmd/lumitlink
 ```
 
 環境変数:
 
 | 変数 | デフォルト | 用途 |
 | :--- | :--- | :--- |
-| `LUMIPAGE_HOST` | `0.0.0.0` | 待受アドレス |
-| `LUMIPAGE_PORT` | `8080` | 待受ポート |
-| `LUMIPAGE_CACHE_TTL` | `10m` | インメモリキャッシュ期間 |
-| `LUMIPAGE_TIMEOUT` | `10s` | Lit.linkへのHTTPタイムアウト |
-| `LUMIPAGE_USER_AGENT` | `lumipage/0.1 (+https://lit.link/)` | upstreamへ送るUser-Agent |
+| `LUMITLINK_HOST` | `0.0.0.0` | 待受アドレス |
+| `LUMITLINK_PORT` | `8080` | 待受ポート |
+| `LUMITLINK_CACHE_TTL` | `10m` | インメモリキャッシュ期間 |
+| `LUMITLINK_TIMEOUT` | `10s` | Lit.linkへのHTTPタイムアウト |
+| `LUMITLINK_USER_AGENT` | `lumitlink/0.1 (+https://lit.link/)` | upstreamへ送るUser-Agent |
 | `LOG_LEVEL` | `INFO` | ログレベル |
 
 ## API
@@ -41,14 +41,14 @@ curl -i http://127.0.0.1:8080/api/v1/profiles/amamiyasaku?refresh=1
 標準エラー出力にはJSON Lines形式のリクエストログを出します。別ターミナルから次のように監視できます。
 
 ```bash
-go run ./cmd/lumipage 2>lumipage.log
-tail -f lumipage.log
+go run ./cmd/lumitlink 2>lumitlink.log
+tail -f lumitlink.log
 ```
 
 Kubernetesでは次を使います。
 
 ```bash
-kubectl logs -f deployment/lumipage -n lumipage
+kubectl logs -f deployment/lumitlink -n lumitlink
 ```
 
 ## テスト
@@ -65,11 +65,18 @@ GitHub Actionsが `main` または `v*` タグへのpushで、amd64/arm64イメ�
 
 ```bash
 kubectl apply -k k8s/manifests
-kubectl rollout status deployment/lumipage -n lumipage --timeout=120s
-kubectl logs -f deployment/lumipage -n lumipage
+kubectl rollout status deployment/lumitlink -n lumitlink --timeout=120s
+kubectl logs -f deployment/lumitlink -n lumitlink
 ```
 
-Ingressは `https://lumipage.aooba.net` を想定しています。ArgoCD用定義は `k8s/argocd/app.yaml` にあります。
+Ingressは `https://lumitlink.aooba.net` を想定しています。ArgoCD用定義は `k8s/argocd/app.yaml` にあります。
+
+既に旧 `lumipage` Applicationを登録している場合は、新しいApplicationを同期してから旧Applicationを削除します。
+
+```bash
+kubectl apply --validate=false -f k8s/argocd/app.yaml
+kubectl delete application lumipage -n argocd
+```
 
 ## lumi-exporterの名寄せ方針
 

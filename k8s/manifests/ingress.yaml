@@ -1,20 +1,20 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: lumipage
+  name: lumitlink
   labels:
-    app.kubernetes.io/name: lumipage
+    app.kubernetes.io/name: lumitlink
     app.kubernetes.io/part-of: lumi-series
 spec:
   ingressClassName: cloudflare-tunnel
   rules:
-    - host: lumipage.aooba.net
+    - host: lumitlink.aooba.net
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: lumipage
+                name: lumitlink
                 port:
                   number: 8080

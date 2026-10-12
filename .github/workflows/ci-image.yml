@@ -83,5 +83,5 @@ jobs:
             echo "Kustomize image tag is already current."
             exit 0
           fi
-          git commit -m "chore(k8s): update lumipage image to ${IMAGE_TAG} [skip ci]"
+          git commit -m "chore(k8s): update lumitlink image to ${IMAGE_TAG} [skip ci]"
           git push origin HEAD:main

@@ -1,4 +1,4 @@
-module github.com/AobaIwaki123/lumipage
+module github.com/AobaIwaki123/lumitlink
 
 go 1.23.0
 

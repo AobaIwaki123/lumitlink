@@ -1,6 +1,6 @@
-# lumipage 規約
+# lumitlink 規約
 
-このワークスペースは、Lit.linkの公開プロフィールをブラウザなしで取得し、JSON APIとして提供するGoサービス `lumipage` の実装・検証を管理します。
+このワークスペースは、Lit.linkの公開プロフィールをブラウザなしで取得し、JSON APIとして提供するGoサービス `lumitlink` の実装・検証を管理します。
 
 ## 方針
 
@@ -15,9 +15,9 @@
 ## 検証
 
 ```bash
-cd space/lumipage
+cd space/lumitlink
 go test ./...
-go run ./cmd/lumipage
+go run ./cmd/lumitlink
 curl -i http://127.0.0.1:8080/healthz
 curl -i http://127.0.0.1:8080/api/v1/profiles/amamiyasaku
 ```
@@ -25,5 +25,5 @@ curl -i http://127.0.0.1:8080/api/v1/profiles/amamiyasaku
 サーバーの標準エラー出力には、HTTPメソッド、パス、ステータス、処理時間、キャッシュ状態をJSON Lines形式で出力します。Kubernetesでは次のコマンドで実ログを確認します。
 
 ```bash
-kubectl logs -f deployment/lumipage -n lumipage
+kubectl logs -f deployment/lumitlink -n lumitlink
 ```

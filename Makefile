@@ -1,6 +1,6 @@
 SHELL := /bin/sh
 
-IMAGE ?= ghcr.io/aobaiwaki123/lumipage
+IMAGE ?= ghcr.io/aobaiwaki123/lumitlink
 TAG ?= dev
 
 .PHONY: test verify build run docker-build docker-push k8s-render k8s-apply
@@ -12,10 +12,10 @@ verify:
 	./scripts/verify-all.sh
 
 build:
-	go build -trimpath -o /tmp/lumipage ./cmd/lumipage
+	go build -trimpath -o /tmp/lumitlink ./cmd/lumitlink
 
 run:
-	go run ./cmd/lumipage
+	go run ./cmd/lumitlink
 
 docker-build:
 	docker build --tag $(IMAGE):$(TAG) .

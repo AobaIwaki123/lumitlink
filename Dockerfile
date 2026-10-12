@@ -11,13 +11,13 @@ COPY . .
 
 RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} go build \
     -trimpath -ldflags="-w -s" \
-    -o /out/lumipage ./cmd/lumipage
+    -o /out/lumitlink ./cmd/lumitlink
 
 FROM gcr.io/distroless/static-debian12:nonroot
 
-COPY --from=builder /out/lumipage /lumipage
+COPY --from=builder /out/lumitlink /lumitlink
 
 EXPOSE 8080
 # Keep the runtime identity numeric so Kubernetes can verify runAsNonRoot.
 USER 65532:65532
-ENTRYPOINT ["/lumipage"]
+ENTRYPOINT ["/lumitlink"]

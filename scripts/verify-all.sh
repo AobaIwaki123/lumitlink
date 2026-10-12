@@ -19,10 +19,10 @@ echo "3. Running tests with race detector"
 go test -race -cover ./...
 
 echo "4. Building binary"
-go build -trimpath -o /tmp/lumipage-verify ./cmd/lumipage
+go build -trimpath -o /tmp/lumitlink-verify ./cmd/lumitlink
 
 echo "5. Rendering Kubernetes manifests"
-kubectl kustomize k8s/manifests >/tmp/lumipage-k8s.yaml
-test -s /tmp/lumipage-k8s.yaml
+kubectl kustomize k8s/manifests >/tmp/lumitlink-k8s.yaml
+test -s /tmp/lumitlink-k8s.yaml
 
 echo "All local verification checks passed."

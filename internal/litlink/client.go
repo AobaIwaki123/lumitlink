@@ -19,7 +19,7 @@ import (
 
 const (
 	BaseURL             = "https://lit.link"
-	DefaultUserAgent    = "lumipage/0.1 (+https://lit.link/)"
+	DefaultUserAgent    = "lumitlink/0.1 (+https://lit.link/)"
 	DefaultTimeout      = 10 * time.Second
 	MaxResponseBytes    = 5 * 1024 * 1024
 	profilePathPrefix   = "/api/v1/profiles/"
