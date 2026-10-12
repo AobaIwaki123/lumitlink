@@ -199,6 +199,11 @@ func (a *application) ServeHTTP(writer http.ResponseWriter, request *http.Reques
 	}
 
 	username, ok := profileUsername(path)
+	entityResponse := false
+	if !ok {
+		username, ok = entityUsername(path)
+		entityResponse = ok
+	}
 	if !ok {
 		writeAPIError(tracked, http.StatusNotFound, "not_found", "endpoint not found")
 		return
@@ -226,11 +231,22 @@ func (a *application) ServeHTTP(writer http.ResponseWriter, request *http.Reques
 	}
 	cacheState = string(state)
 	tracked.Header().Set("X-Cache", cacheState)
+	if entityResponse {
+		writeJSON(tracked, http.StatusOK, litlink.ToEntity(validated, response))
+		return
+	}
 	writeJSON(tracked, http.StatusOK, response)
 }
 
 func profileUsername(path string) (string, bool) {
-	prefixes := []string{"/api/v1/profiles/", "/v1/profiles/"}
+	return prefixedUsername(path, []string{"/api/v1/profiles/", "/v1/profiles/"})
+}
+
+func entityUsername(path string) (string, bool) {
+	return prefixedUsername(path, []string{"/api/v1/entities/", "/v1/entities/"})
+}
+
+func prefixedUsername(path string, prefixes []string) (string, bool) {
 	for _, prefix := range prefixes {
 		if !strings.HasPrefix(path, prefix) {
 			continue

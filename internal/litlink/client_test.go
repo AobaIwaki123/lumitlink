@@ -104,3 +104,30 @@ func TestValidateUsername(t *testing.T) {
 		t.Fatal("expected invalid username")
 	}
 }
+
+func TestToEntityProjectsIconAndSNS(t *testing.T) {
+	response := Response{
+		Profile: Profile{
+			Name:       "雨宮サク",
+			PictureURL: "https://cdn.example/icon.jpg",
+			Links: []Link{
+				{Title: "X", URL: "https://x.com/amamiyasaku", URLType: "x"},
+				{Title: "公式サイト", URL: "https://example.com"},
+			},
+		},
+		Source: Source{URL: "https://lit.link/amamiyasaku"},
+	}
+	record := ToEntity("amamiyasaku", response)
+	if record.SchemaVersion != "lumi.entity.v1" {
+		t.Fatalf("schema version = %q", record.SchemaVersion)
+	}
+	if record.Kind != "idol" || record.Name != "雨宮サク" {
+		t.Fatalf("record identity = %#v", record)
+	}
+	if len(record.Assets) != 1 || record.Assets[0].Kind != "icon" {
+		t.Fatalf("assets = %#v", record.Assets)
+	}
+	if len(record.SocialLinks) != 1 || record.SocialLinks[0].Platform != "x" {
+		t.Fatalf("social links = %#v", record.SocialLinks)
+	}
+}

@@ -22,11 +22,14 @@
 | 4 | テスト | 固定HTMLによる解析テスト、race検査、go vet | 完了 |
 | 5 | 運用強化 | Docker/Kubernetesマニフェスト、UI、構造化ログ | 完了 |
 | 6 | ライブ適用 | イメージ公開、Kubernetes apply、Ingress疎通確認 | 進行中 |
-| 7 | lumi-exporter | イベント名寄せと相対評価アラート | 設計中 |
+| 7 | 共通entity endpoint | `/api/v1/entities/{username}`でlumi-specへ投影 | 実装中 |
+| 8 | lumi-exporter | イベント名寄せと相対評価アラート | 別repoでPoC中 |
 
 ## 直近のネクストアクション
 
 - [ ] GHCRへイメージを公開し、Kubernetesに適用する
 - [ ] Lit.linkのHTML構造変更を検出する定期Canaryを追加する
 - [ ] ArgoCD Applicationを、独立リポジトリ公開後に有効化する
-- [ ] `lumi-exporter` の名寄せアラートを実装する
+- [ ] `lumi-exporter` の名寄せアラートを実データで評価する（別repoのPoCを参照）
+- [ ] `lumi-spec`の共通イベント・エンティティ契約を利用する
+- [ ] `lumi-exporter`からentity endpointをpullして画面表示する

@@ -12,6 +12,10 @@ paths:
       responses:
         "200":
           description: "サービスが稼働中"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
   /api/v1/profiles/{username}:
     get:
       operationId: getProfile
@@ -35,8 +39,163 @@ paths:
           content:
             application/json:
               schema:
-                type: "object"
+                $ref: "#/components/schemas/ProfileResponse"
         "400":
           description: "username不正"
         "502":
           description: "Lit.link取得または解析失敗"
+  /api/v1/entities/{username}:
+    get:
+      operationId: getEntity
+      description: "プロフィールをlumi-specのentity.v1へ投影した共通レコード"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          description: "Lit.linkの公開プロフィール名"
+          schema:
+            type: "string"
+            pattern: "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+        - name: "refresh"
+          in: "query"
+          required: false
+          description: "1、true、yes、on のいずれかでキャッシュを再利用しない"
+          schema:
+            type: "boolean"
+      responses:
+        "200":
+          description: "lumi entity.v1取得成功"
+          content:
+            application/json:
+              schema:
+                $ref: "https://raw.githubusercontent.com/AobaIwaki123/lumi-spec/v0.1.0/schema/entity.v1.json"
+        "400":
+          description: "username不正"
+        "502":
+          description: "Lit.link取得または解析失敗"
+
+components:
+  schemas:
+    JsonValue:
+      nullable: true
+      oneOf:
+        - type: string
+        - type: number
+        - type: boolean
+        - type: object
+        - type: array
+    HealthResponse:
+      type: object
+      required: [status, service]
+      properties:
+        status:
+          type: string
+          example: ok
+        service:
+          type: string
+          example: lumitlink
+    ProfileResponse:
+      type: object
+      required: [page_title, metadata, profile, stats, source, cached]
+      properties:
+        page_title:
+          $ref: "#/components/schemas/JsonValue"
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        profile:
+          $ref: "#/components/schemas/Profile"
+        stats:
+          $ref: "#/components/schemas/Stats"
+        source:
+          $ref: "#/components/schemas/Source"
+        cached:
+          type: boolean
+    Profile:
+      type: object
+      required: [name, catchphrase, profile_text, url_path, picture_url, links]
+      properties:
+        name:
+          $ref: "#/components/schemas/JsonValue"
+        catchphrase:
+          $ref: "#/components/schemas/JsonValue"
+        profile_text:
+          $ref: "#/components/schemas/JsonValue"
+        url_path:
+          $ref: "#/components/schemas/JsonValue"
+        picture_url:
+          $ref: "#/components/schemas/JsonValue"
+        layout:
+          $ref: "#/components/schemas/JsonValue"
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/Category"
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProfileLink"
+    Category:
+      type: object
+      properties:
+        genre:
+          $ref: "#/components/schemas/JsonValue"
+        category:
+          $ref: "#/components/schemas/JsonValue"
+    ProfileLink:
+      type: object
+      required: [id, type, title, description, description_text, url, url_type, publication_start_at, publication_end_at]
+      properties:
+        id:
+          $ref: "#/components/schemas/JsonValue"
+        type:
+          type: string
+        title:
+          $ref: "#/components/schemas/JsonValue"
+        description:
+          $ref: "#/components/schemas/JsonValue"
+        description_text:
+          $ref: "#/components/schemas/JsonValue"
+        url:
+          $ref: "#/components/schemas/JsonValue"
+        url_type:
+          $ref: "#/components/schemas/JsonValue"
+        provider:
+          $ref: "#/components/schemas/JsonValue"
+        image_url:
+          $ref: "#/components/schemas/JsonValue"
+        publication_start_at:
+          $ref: "#/components/schemas/JsonValue"
+        publication_end_at:
+          $ref: "#/components/schemas/JsonValue"
+    Stats:
+      type: object
+      required: [profile_blocks, links]
+      properties:
+        profile_blocks:
+          type: integer
+        links:
+          type: integer
+    Source:
+      type: object
+      required: [url, http_status, content_length, duration_ms, cached]
+      properties:
+        url:
+          type: string
+          format: uri
+        http_status:
+          type: integer
+        content_type:
+          type: string
+        content_length:
+          type: integer
+        etag:
+          type: string
+        duration_ms:
+          type: integer
+        cached:
+          type: boolean
+        cache_age_seconds:
+          type: number
+          nullable: true

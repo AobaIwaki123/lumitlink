@@ -24,6 +24,7 @@ go run ./cmd/lumitlink
 ```bash
 curl -i http://127.0.0.1:8080/healthz
 curl -i http://127.0.0.1:8080/api/v1/profiles/amamiyasaku
+curl -i http://127.0.0.1:8080/api/v1/entities/amamiyasaku
 curl -i http://127.0.0.1:8080/api/v1/profiles/amamiyasaku?refresh=1
 ```
 
@@ -33,6 +34,8 @@ curl -i http://127.0.0.1:8080/api/v1/profiles/amamiyasaku?refresh=1
 - SNS、ボタン、画像、動画、音楽、ショップ、カレンダーのリンク一覧
 - `metadata` のtitle、description、Open Graph、Twitter Card情報
 - `source` の取得URL、HTTPステータス、レスポンスサイズ、ETag、処理時間、キャッシュ状態
+
+`GET /api/v1/entities/{username}` はプロフィールの安定した共通部分を [`lumi-spec`](https://github.com/AobaIwaki123/lumi-spec) の `entity.v1` として返します。アイコンは`assets`、XやInstagramなどのSNSは`social_links`、Lit.linkの出所は`source_refs`に入ります。
 
 ## UIとログ
 
@@ -78,9 +81,9 @@ kubectl apply --validate=false -f k8s/argocd/app.yaml
 kubectl delete application lumipage -n argocd
 ```
 
-## lumi-exporterの名寄せ方針
+## lumi-exporterとのpull連携
 
-イベントの統合はタイトルだけで確定させず、正規化タイトル、開催日、会場、出演者、各ソースURLを候補として残します。相対評価で最高スコアを採用しますが、1位が同点、または2位との差が設定したマージン未満の場合は `ambiguous` としてアラートを上げ、自動統合しません。アラートには候補、各スコア、総合スコア、入力ソースを保存し、重みと正規化コードを見直せるようにします。
+`lumi-exporter` は登録したlumiサービスをpullし、`entity.v1`、`event-feed.v1`などの共通データとして描画できます。イベントの名寄せルールと評価fixtureは [lumi-exporter](https://github.com/AobaIwaki123/lumi-exporter) 側で管理します。
 
 ## 制約
 
