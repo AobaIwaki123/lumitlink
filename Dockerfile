@@ -18,5 +18,6 @@ FROM gcr.io/distroless/static-debian12:nonroot
 COPY --from=builder /out/lumipage /lumipage
 
 EXPOSE 8080
-USER nonroot:nonroot
+# Keep the runtime identity numeric so Kubernetes can verify runAsNonRoot.
+USER 65532:65532
 ENTRYPOINT ["/lumipage"]
