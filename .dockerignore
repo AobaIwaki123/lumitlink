@@ -1,0 +1,10 @@
+.git
+.github
+bin
+tmp
+*.log
+note
+adr
+scripts
+README.md
+AGENTS.md

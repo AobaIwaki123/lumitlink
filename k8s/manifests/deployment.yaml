@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lumipage
+  labels:
+    app.kubernetes.io/name: lumipage
+    app.kubernetes.io/part-of: lumi-series
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: lumipage
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: lumipage
+        app.kubernetes.io/part-of: lumi-series
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 15
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: lumipage
+          image: ghcr.io/aobaiwaki123/lumipage:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: LUMIPAGE_HOST
+              value: "0.0.0.0"
+            - name: LUMIPAGE_PORT
+              value: "8080"
+            - name: LUMIPAGE_CACHE_TTL
+              value: "10m"
+            - name: LUMIPAGE_TIMEOUT
+              value: "15s"
+            - name: LUMIPAGE_USER_AGENT
+              value: "lumipage/0.1 (+https://lit.link/)"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 3

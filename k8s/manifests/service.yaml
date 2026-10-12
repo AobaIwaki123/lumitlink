@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lumipage
+  labels:
+    app.kubernetes.io/name: lumipage
+    app.kubernetes.io/part-of: lumi-series
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: lumipage
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP

@@ -1,0 +1,87 @@
+name: Container Image
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+    paths-ignore:
+      - "k8s/manifests/kustomization.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Calculate image tags
+        id: meta
+        env:
+          REPOSITORY: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          IMAGE="ghcr.io/$(echo "${REPOSITORY}" | tr '[:upper:]' '[:lower:]')"
+          SHORT_SHA="${SHA:0:7}"
+          TAGS="${IMAGE}:sha-${SHORT_SHA},${IMAGE}:latest"
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            TAGS="${TAGS},${IMAGE}:${REF_NAME}"
+          fi
+          {
+            echo "image=${IMAGE}"
+            echo "tag_sha=sha-${SHORT_SHA}"
+            echo "tags=${TAGS}"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Build and publish multi-arch image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Update deployment image tag
+        if: github.ref == 'refs/heads/main'
+        env:
+          IMAGE_TAG: ${{ steps.meta.outputs.tag_sha }}
+        run: |
+          sed -i.bak -E "s/(newTag: ).*/\\1${IMAGE_TAG}/" k8s/manifests/kustomization.yaml
+          rm -f k8s/manifests/kustomization.yaml.bak
+
+      - name: Commit deployment image tag to main
+        if: github.ref == 'refs/heads/main'
+        env:
+          IMAGE_TAG: ${{ steps.meta.outputs.tag_sha }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add k8s/manifests/kustomization.yaml
+          if git diff --cached --quiet; then
+            echo "Kustomize image tag is already current."
+            exit 0
+          fi
+          git commit -m "chore(k8s): update lumipage image to ${IMAGE_TAG} [skip ci]"
+          git push origin HEAD:main

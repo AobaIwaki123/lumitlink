@@ -1,0 +1,42 @@
+openapi: 3.0.3
+info:
+  title: "lumipage API"
+  version: "0.1.0"
+  description: "ブラウザを使わずLit.link公開プロフィールを取得する読み取り専用API。"
+servers:
+  - url: "/"
+paths:
+  /healthz:
+    get:
+      operationId: health
+      responses:
+        "200":
+          description: "サービスが稼働中"
+  /api/v1/profiles/{username}:
+    get:
+      operationId: getProfile
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          description: "Lit.linkの公開プロフィール名"
+          schema:
+            type: "string"
+            pattern: "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+        - name: "refresh"
+          in: "query"
+          required: false
+          description: "1、true、yes、on のいずれかでキャッシュを再利用しない"
+          schema:
+            type: "boolean"
+      responses:
+        "200":
+          description: "プロフィール取得成功"
+          content:
+            application/json:
+              schema:
+                type: "object"
+        "400":
+          description: "username不正"
+        "502":
+          description: "Lit.link取得または解析失敗"

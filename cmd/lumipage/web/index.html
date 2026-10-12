@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lumipage / Lit.link inspector</title>
+  <style>
+    :root { color-scheme: dark; --bg: #10131d; --panel: #181d2b; --panel2: #20273a; --ink: #f4f6fb; --muted: #9ba8c4; --line: #303951; --accent: #a78bfa; --accent2: #67e8f9; --danger: #fb7185; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; color: var(--ink); background: radial-gradient(circle at 15% 5%, #29335c 0, transparent 34rem), var(--bg); font: 15px/1.6 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    main { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 52px 0 70px; }
+    .eyebrow { color: var(--accent2); letter-spacing: .18em; text-transform: uppercase; font-size: 12px; font-weight: 700; }
+    h1 { margin: 8px 0 10px; font-size: clamp(32px, 6vw, 64px); letter-spacing: -.05em; line-height: 1; }
+    .lead { max-width: 700px; margin: 0 0 28px; color: var(--muted); font-size: 16px; }
+    .search { display: flex; gap: 10px; padding: 10px; max-width: 720px; border: 1px solid var(--line); border-radius: 18px; background: #121724cc; box-shadow: 0 16px 60px #0005; }
+    input, button { border: 0; border-radius: 12px; font: inherit; }
+    input { flex: 1; min-width: 0; padding: 12px 14px; color: var(--ink); background: var(--panel2); outline: 1px solid transparent; }
+    input:focus { outline-color: var(--accent); }
+    button { padding: 12px 18px; color: #11111b; background: linear-gradient(135deg, var(--accent), var(--accent2)); font-weight: 800; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; }
+    .status { min-height: 28px; margin: 14px 2px; color: var(--muted); }
+    .status.error { color: var(--danger); }
+    .grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 16px; }
+    .panel { min-width: 0; padding: 20px; border: 1px solid var(--line); border-radius: 20px; background: #181d2bee; box-shadow: 0 16px 50px #0003; }
+    .profile { display: flex; gap: 16px; align-items: center; margin-bottom: 18px; }
+    .avatar { width: 72px; height: 72px; border-radius: 22px; object-fit: cover; background: var(--panel2); border: 1px solid var(--line); }
+    h2, h3 { margin: 0; line-height: 1.2; }
+    h2 { font-size: 24px; }
+    h3 { margin-bottom: 12px; font-size: 14px; color: var(--accent2); letter-spacing: .08em; text-transform: uppercase; }
+    .catchphrase { color: var(--accent); }
+    .bio { white-space: pre-wrap; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+    .chip { padding: 3px 9px; border-radius: 99px; color: #dce4ff; background: #29324b; font-size: 12px; }
+    .links { display: grid; gap: 9px; }
+    .link { display: block; padding: 12px 14px; border: 1px solid var(--line); border-radius: 13px; color: var(--ink); background: #12172488; text-decoration: none; transition: transform .15s, border-color .15s; }
+    .link:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .link small { display: block; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
+    .fact { padding: 12px; border-radius: 13px; background: var(--panel2); }
+    .fact b { display: block; font-size: 20px; }
+    .fact span { color: var(--muted); font-size: 12px; }
+    pre { max-height: 520px; overflow: auto; margin: 0; padding: 14px; border-radius: 13px; color: #d8e1f5; background: #0d1018; font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    code { color: var(--accent2); }
+    .empty { color: var(--muted); }
+    details { margin-top: 16px; }
+    summary { color: var(--muted); cursor: pointer; }
+    @media (max-width: 760px) { main { width: min(100% - 20px, 680px); padding-top: 30px; } .search { flex-direction: column; } .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">browserless public profile adapter</div>
+    <h1>lumipage</h1>
+    <p class="lead">Lit.link の公開HTMLをGoで取得し、プロフィールとリンクをそのまま確認する小さな遊び場です。下の表示はモックではなく、APIレスポンスの実データです。</p>
+    <form class="search" id="search-form">
+      <input id="username" value="amamiyasaku" aria-label="Lit.link username" spellcheck="false">
+      <button id="load-button" type="submit">取得する</button>
+    </form>
+    <div id="status" class="status">準備中...</div>
+
+    <section class="grid">
+      <article class="panel">
+        <div id="profile" class="empty">プロフィールを取得するとここに表示されます。</div>
+      </article>
+      <aside class="panel">
+        <h3>request facts</h3>
+        <div id="facts" class="facts"><div class="fact"><b>—</b><span>HTTP status</span></div><div class="fact"><b>—</b><span>runtime</span></div></div>
+        <h3>raw JSON</h3>
+        <pre id="raw">まだレスポンスはありません。</pre>
+        <details>
+          <summary>実ログを別ターミナルで見る</summary>
+          <p><code>kubectl logs -f deployment/lumipage -n lumipage</code></p>
+        </details>
+      </aside>
+    </section>
+  </main>
+  <script>
+    const form = document.getElementById('search-form');
+    const username = document.getElementById('username');
+    const button = document.getElementById('load-button');
+    const status = document.getElementById('status');
+    const profile = document.getElementById('profile');
+    const facts = document.getElementById('facts');
+    const raw = document.getElementById('raw');
+
+    function text(value) { return value == null ? '' : String(value); }
+    function escapeHTML(value) { return text(value).replace(/[&<>'"]/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char])); }
+    function render(data, response, runtime, cache) {
+      const p = data.profile || {};
+      const links = Array.isArray(p.links) ? p.links : [];
+      const categories = Array.isArray(p.categories) ? p.categories.filter((item) => item.genre || item.category) : [];
+      const linkHTML = links.map((link) => {
+        const href = text(link.url);
+        const title = text(link.title) || href || 'untitled link';
+        const description = text(link.description_text || link.description);
+        return href ? `<a class="link" href="${escapeHTML(href)}" target="_blank" rel="noreferrer"><b>${escapeHTML(title)}</b><small>${escapeHTML(description || href)}</small></a>` : `<div class="link"><b>${escapeHTML(title)}</b><small>${escapeHTML(description)}</small></div>`;
+      }).join('');
+      profile.innerHTML = `<div class="profile">${p.picture_url ? `<img class="avatar" src="${escapeHTML(p.picture_url)}" alt="">` : '<div class="avatar"></div>'}<div><h2>${escapeHTML(p.name || 'Unnamed profile')}</h2><div class="catchphrase">${escapeHTML(p.catchphrase)}</div></div></div><div class="bio">${escapeHTML(p.profile_text || '')}</div>${categories.length ? `<div class="chips">${categories.map((item) => `<span class="chip">${escapeHTML(item.genre || item.category)}</span>`).join('')}</div>` : ''}<h3 style="margin-top:24px">links · ${links.length}</h3><div class="links">${linkHTML || '<div class="empty">リンクは見つかりませんでした。</div>'}</div>`;
+      const source = data.source || {};
+      facts.innerHTML = `<div class="fact"><b>${response.status}</b><span>HTTP status</span></div><div class="fact"><b>${escapeHTML(runtime || '—')} ms</b><span>API runtime</span></div><div class="fact"><b>${escapeHTML(cache || '—')}</b><span>X-Cache</span></div><div class="fact"><b>${escapeHTML(source.content_length || 0)}</b><span>upstream bytes</span></div>`;
+      raw.textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function loadProfile(event) {
+      event.preventDefault();
+      const value = username.value.trim();
+      if (!value) return;
+      button.disabled = true;
+      status.className = 'status';
+      status.textContent = 'Lit.link から取得中...';
+      try {
+        const response = await fetch(`/api/v1/profiles/${encodeURIComponent(value)}`);
+        const data = await response.json();
+        const runtime = response.headers.get('X-Runtime-Ms');
+        const cache = response.headers.get('X-Cache');
+        if (!response.ok) throw new Error(data.error?.message || `HTTP ${response.status}`);
+        render(data, response, runtime, cache);
+        status.textContent = `${value} を取得しました。${data.cached ? 'インメモリキャッシュから返しています。' : 'Lit.linkへのHTTP取得結果です。'}`;
+      } catch (error) {
+        status.className = 'status error';
+        status.textContent = `取得できませんでした: ${error.message}`;
+      } finally {
+        button.disabled = false;
+      }
+    }
+    form.addEventListener('submit', loadProfile);
+    loadProfile({ preventDefault() {} });
+  </script>
+</body>
+</html>
