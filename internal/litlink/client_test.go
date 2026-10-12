@@ -111,7 +111,7 @@ func TestToEntityProjectsIconAndSNS(t *testing.T) {
 			Name:       "雨宮サク",
 			PictureURL: "https://cdn.example/icon.jpg",
 			Links: []Link{
-				{Title: "X", URL: "https://x.com/amamiyasaku", URLType: "x"},
+				{Type: "image", Title: "X", URL: "https://x.com/amamiyasaku", URLType: "x"},
 				{Title: "公式サイト", URL: "https://example.com"},
 			},
 		},

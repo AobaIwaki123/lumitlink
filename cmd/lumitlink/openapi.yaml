@@ -73,6 +73,31 @@ paths:
           description: "username不正"
         "502":
           description: "Lit.link取得または解析失敗"
+  /api/v1/events/{username}:
+    get:
+      operationId: getEvents
+      description: "日付付きのプロフィールイベントリンクをlumi-specのevent.feed.v1へ投影"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          description: "Lit.linkの公開プロフィール名"
+          schema:
+            type: "string"
+            pattern: "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+        - name: "refresh"
+          in: "query"
+          required: false
+          description: "1、true、yes、on のいずれかでキャッシュを再利用しない"
+          schema:
+            type: "boolean"
+      responses:
+        "200":
+          description: "イベントfeed取得成功"
+        "400":
+          description: "username不正"
+        "502":
+          description: "Lit.link取得または解析失敗"
 
 components:
   schemas:

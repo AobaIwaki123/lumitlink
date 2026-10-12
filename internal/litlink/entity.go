@@ -40,7 +40,7 @@ func ToEntity(username string, response Response) entity.Record {
 	for _, link := range response.Profile.Links {
 		linkURL := stringValue(link.URL)
 		platform := socialPlatform(linkURL, stringValue(link.URLType))
-		if platform == "" {
+		if platform == "" || !isCanonicalSocialLink(link, platform) {
 			continue
 		}
 		if _, seen := seenURLs[linkURL]; seen || linkURL == "" {
@@ -54,6 +54,25 @@ func ToEntity(username string, response Response) entity.Record {
 		})
 	}
 	return record
+}
+
+// isCanonicalSocialLink keeps the entity projection focused on profile
+// accounts. Lit.link profiles often contain many X posts, videos, and event
+// announcements; those remain available from the profile endpoint and are
+// handled by ToEventFeed when applicable.
+func isCanonicalSocialLink(link Link, platform string) bool {
+	if link.Type != "image" {
+		return false
+	}
+	parsed, err := url.Parse(stringValue(link.URL))
+	if err != nil || parsed.Hostname() == "" {
+		return false
+	}
+	if platform == "youtube" && strings.EqualFold(strings.TrimPrefix(parsed.Hostname(), "www."), "youtu.be") {
+		return false
+	}
+	segments := strings.Split(strings.Trim(parsed.Path, "/"), "/")
+	return len(segments) == 1 && segments[0] != ""
 }
 
 func socialPlatform(rawURL, urlType string) string {

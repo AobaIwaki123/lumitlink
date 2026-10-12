@@ -200,9 +200,14 @@ func (a *application) ServeHTTP(writer http.ResponseWriter, request *http.Reques
 
 	username, ok := profileUsername(path)
 	entityResponse := false
+	eventsResponse := false
 	if !ok {
 		username, ok = entityUsername(path)
 		entityResponse = ok
+	}
+	if !ok {
+		username, ok = eventsUsername(path)
+		eventsResponse = ok
 	}
 	if !ok {
 		writeAPIError(tracked, http.StatusNotFound, "not_found", "endpoint not found")
@@ -235,6 +240,10 @@ func (a *application) ServeHTTP(writer http.ResponseWriter, request *http.Reques
 		writeJSON(tracked, http.StatusOK, litlink.ToEntity(validated, response))
 		return
 	}
+	if eventsResponse {
+		writeJSON(tracked, http.StatusOK, litlink.ToEventFeed(validated, response))
+		return
+	}
 	writeJSON(tracked, http.StatusOK, response)
 }
 
@@ -244,6 +253,10 @@ func profileUsername(path string) (string, bool) {
 
 func entityUsername(path string) (string, bool) {
 	return prefixedUsername(path, []string{"/api/v1/entities/", "/v1/entities/"})
+}
+
+func eventsUsername(path string) (string, bool) {
+	return prefixedUsername(path, []string{"/api/v1/events/", "/v1/events/"})
 }
 
 func prefixedUsername(path string, prefixes []string) (string, bool) {
