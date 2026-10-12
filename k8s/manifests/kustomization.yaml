@@ -9,4 +9,4 @@ resources:
 images:
   - name: ghcr.io/aobaiwaki123/lumipage
     newName: ghcr.io/aobaiwaki123/lumipage
-    newTag: sha-9d1c400
+    newTag: sha-2c0caf4
