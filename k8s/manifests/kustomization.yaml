@@ -9,4 +9,4 @@ resources:
 images:
   - name: ghcr.io/aobaiwaki123/lumitlink
     newName: ghcr.io/aobaiwaki123/lumitlink
-    newTag: sha-b384037
+    newTag: sha-8b4f55d
