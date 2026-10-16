@@ -12,7 +12,7 @@
 
 ## 実装上の判断
 
-公開ページ取得にはGoの [`net/http`](https://pkg.go.dev/net/http) を使い、HTMLの外側は [`golang.org/x/net/html`](https://pkg.go.dev/golang.org/x/net/html) で解析する。Lit.link固有のSSRデータ解析は `internal/litlink` に閉じ込める。
+公開ページ取得にはGoの [`net/http`](https://pkg.go.dev/net/http) を使い、HTMLの外側は [`golang.org/x/net/html`](https://pkg.go.dev/golang.org/x/net/html) で解析する。Lit.link固有のSSRデータ解析は公開パッケージ `pkg/litlink` に閉じ込め、CLIとHTTP APIから共有する。
 
 一般的なリンク集抽出OSSとして、MITライセンスの [`ssut/biosites`](https://github.com/ssut/biosites) はLit.link対応を明記している。ただし今回必要なプロフィール本文、画像ブロック、動画、TimeTreeリンクまで保持するには、対象ページのSSRデータを直接正規化する方が情報を失いにくい。そのため初期実装ではブラウザ自動操作の依存を追加していない。
 

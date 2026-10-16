@@ -6,6 +6,7 @@ import (
 	"embed"
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"io/fs"
 	"log/slog"
@@ -19,7 +20,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/AobaIwaki123/lumitlink/internal/litlink"
+	"github.com/AobaIwaki123/lumitlink/pkg/litlink"
 )
 
 //go:embed web/index.html openapi.yaml
@@ -67,13 +68,28 @@ func (w *trackingWriter) Write(body []byte) (int, error) {
 }
 
 func main() {
-	if err := run(); err != nil {
+	if err := run(os.Args[1:]); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-func run() error {
+func run(args []string) error {
+	if len(args) == 0 || args[0] == "serve" {
+		return runServer()
+	}
+	switch args[0] {
+	case "profile", "entity", "events":
+		return runProjection(args[0], args[1:])
+	case "help", "-h", "--help":
+		printUsage()
+		return nil
+	default:
+		return fmt.Errorf("unknown command %q (try: lumitlink help)", args[0])
+	}
+}
+
+func runServer() error {
 	cfg := loadConfig()
 	logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: cfg.logLevel}))
 	client := litlink.NewClient(cfg.timeout, cfg.userAgent)
@@ -104,6 +120,64 @@ func run() error {
 		return fmt.Errorf("server failed: %w", err)
 	}
 	return nil
+}
+
+func runProjection(command string, args []string) error {
+	flags := flag.NewFlagSet("lumitlink "+command, flag.ContinueOnError)
+	flags.SetOutput(os.Stderr)
+	refresh := flags.Bool("refresh", false, "bypass the in-process cache")
+	timeout := flags.Duration("timeout", litlink.DefaultTimeout, "upstream HTTP timeout")
+	userAgent := flags.String("user-agent", litlink.DefaultUserAgent, "upstream User-Agent")
+	if err := flags.Parse(args); err != nil {
+		return err
+	}
+	if flags.NArg() != 1 {
+		return fmt.Errorf("usage: lumitlink %s <username> [--refresh]", command)
+	}
+	username, err := litlink.ValidateUsername(flags.Arg(0))
+	if err != nil {
+		return err
+	}
+	client := litlink.NewClient(*timeout, *userAgent)
+	service := litlink.NewProfileService(client, 10*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), *timeout)
+	defer cancel()
+	response, _, err := service.Get(ctx, username, *refresh)
+	if err != nil {
+		return err
+	}
+
+	var payload any
+	switch command {
+	case "profile":
+		payload = response
+	case "entity":
+		payload = litlink.ToEntity(username, response)
+	case "events":
+		payload = litlink.ToEventFeed(username, response)
+	}
+	return encodeCLIJSON(payload)
+}
+
+func encodeCLIJSON(payload any) error {
+	encoder := json.NewEncoder(os.Stdout)
+	encoder.SetIndent("", "  ")
+	encoder.SetEscapeHTML(false)
+	return encoder.Encode(payload)
+}
+
+func printUsage() {
+	fmt.Println("lumitlink - Lit.link adapter, CLI and API server")
+	fmt.Println()
+	fmt.Println("Usage:")
+	fmt.Println("  lumitlink serve                 Start the HTTP API server (default)")
+	fmt.Println("  lumitlink profile <username>    Fetch the source-native profile JSON")
+	fmt.Println("  lumitlink entity <username>     Fetch a lumi-spec entity.v1 record")
+	fmt.Println("  lumitlink events <username>     Fetch a lumi-spec event-feed.v1 record")
+	fmt.Println()
+	fmt.Println("CLI options:")
+	fmt.Println("  --refresh                       Bypass the in-process cache")
+	fmt.Println("  --timeout <duration>            Upstream HTTP timeout")
 }
 
 func loadConfig() config {

@@ -2,6 +2,8 @@
 
 Lit.linkの公開プロフィールを、ブラウザなしで取得してJSON APIとして提供する小さなGoサーバーです。lumiシリーズのプロフィール取得担当として、まず `amamiyasaku` を初期表示対象にしています。
 
+取得・正規化の本体は `pkg/litlink` にあり、HTTP APIはその薄いラッパーです。CLIからも同じ処理を利用できます。
+
 ## 起動
 
 ```bash
@@ -28,6 +30,14 @@ curl -i http://127.0.0.1:8080/api/v1/entities/amamiyasaku
 curl -i http://127.0.0.1:8080/api/v1/profiles/amamiyasaku?refresh=1
 ```
 
+CLIで取得する場合は次のコマンドを使います。引数なしで起動した場合は従来どおりHTTPサーバーを起動します。
+
+```bash
+go run ./cmd/lumitlink profile amamiyasaku
+go run ./cmd/lumitlink entity amamiyasaku
+go run ./cmd/lumitlink events amamiyasaku
+```
+
 `GET /api/v1/profiles/{username}` は次を返します。互換用に `/v1/profiles/{username}` も受け付けます。
 
 - `profile.name`, `profile.catchphrase`, `profile.profile_text`
@@ -36,6 +46,8 @@ curl -i http://127.0.0.1:8080/api/v1/profiles/amamiyasaku?refresh=1
 - `source` の取得URL、HTTPステータス、レスポンスサイズ、ETag、処理時間、キャッシュ状態
 
 `GET /api/v1/entities/{username}` はプロフィールの安定した共通部分を [`lumi-spec`](https://github.com/AobaIwaki123/lumi-spec) の `entity.v1` として返します。アイコンは`assets`、XやInstagramなどのSNSは`social_links`、Lit.linkの出所は`source_refs`に入ります。
+
+`GET /api/v1/events/{username}` と `lumitlink events` は、日付付きbuttonから抽出した `event.feed.v1` を返します。buttonのURLや説明文中のURLは `links` に入り、チケットページには `kind: "ticket"`、公式ページには `kind: "official"` が付与されます。`source_ref.url` はLit.linkプロフィールの出典URLです。
 
 ## UIとログ
 

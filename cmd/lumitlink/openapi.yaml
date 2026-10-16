@@ -68,7 +68,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "https://raw.githubusercontent.com/AobaIwaki123/lumi-spec/v0.1.0/schema/entity.v1.json"
+                $ref: "https://raw.githubusercontent.com/AobaIwaki123/lumi-spec/v0.1.1/schema/entity.v1.json"
         "400":
           description: "username不正"
         "502":
