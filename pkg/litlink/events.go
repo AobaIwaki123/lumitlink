@@ -63,9 +63,9 @@ func linkToEvent(username string, response Response, link Link, now time.Time) (
 		title = rawTitle
 	}
 	description := stringValue(link.DescriptionText)
-	sourceURL := stringValue(link.URL)
+	sourceURL := response.Source.URL
 	if sourceURL == "" {
-		sourceURL = response.Source.URL
+		sourceURL = stringValue(link.URL)
 	}
 	recordID := stringValue(link.ID)
 	if recordID == "" {
@@ -92,6 +92,10 @@ func linkToEvent(username string, response Response, link Link, now time.Time) (
 			"source_profile":     response.Source.URL,
 		},
 	}
+	if linkURL := stringValue(link.URL); linkURL != "" {
+		candidate.Extensions["source_link_url"] = linkURL
+	}
+	candidate.Links = extractEventLinks(link, sourceURL)
 	if name := stringValue(response.Profile.Name); name != "" {
 		candidate.Performers = []string{name}
 		candidate.PerformerRefs = []event.EntityRef{{ID: username, Name: name}}

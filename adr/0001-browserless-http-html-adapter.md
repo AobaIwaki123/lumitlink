@@ -10,7 +10,7 @@
 
 ## 決定
 
-Goの `net/http` とHTMLパーサーでLit.linkの公開HTMLを取得し、Lit.link固有の解析コードを `internal/litlink` アダプターに閉じ込める。APIは読み取り専用とし、取得結果をインメモリキャッシュする。
+Goの `net/http` とHTMLパーサーでLit.linkの公開HTMLを取得し、Lit.link固有の解析コードを `pkg/litlink` アダプターに閉じ込める。CLIとAPIはこのパッケージを共有し、APIは読み取り専用の薄いラッパーとする。取得結果はインメモリキャッシュする。
 
 ## 採用理由
 

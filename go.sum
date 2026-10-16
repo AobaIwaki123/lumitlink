@@ -1,4 +1,6 @@
 github.com/AobaIwaki123/lumi-spec v0.1.1 h1:LGD5j1BfjDQk6yC3aHwvb40NyUH4JYLdXSnNlLk5rG0=
 github.com/AobaIwaki123/lumi-spec v0.1.1/go.mod h1:hCCUe0+a9V95SwmQTjL/b+kwE+ePDfcaR/wvTbfgByE=
+github.com/AobaIwaki123/lumi-spec v0.1.2-0.20261016143410-9fc684ea55fc h1:SeX7vdZf8LGh27r/f7e5H53034SvHj88YhxHkrjJyZk=
+github.com/AobaIwaki123/lumi-spec v0.1.2-0.20261016143410-9fc684ea55fc/go.mod h1:hCCUe0+a9V95SwmQTjL/b+kwE+ePDfcaR/wvTbfgByE=
 golang.org/x/net v0.43.0 h1:lat02VYK2j4aLzMzecihNvTlJNQUq316m2Mr9rnM6YE=
 golang.org/x/net v0.43.0/go.mod h1:vhO1fvI4dGsIjh73sWfUVjj3N7CA9WkKJNQm2svM6Jg=
